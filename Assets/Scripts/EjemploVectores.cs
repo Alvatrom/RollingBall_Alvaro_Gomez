@@ -18,7 +18,7 @@ public class EjemploVectores : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            transform.position = transform.position + new Vector3(1,0,0)*3* Time.deltaTime;
+            transform.position = transform.position + new Vector3(1,0,0).normalized *3* Time.deltaTime;
         }
         
     }
