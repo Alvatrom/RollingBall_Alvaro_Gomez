@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
-public class Coleccionable : MonoBehaviour
+public class Potenciador : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
-    [SerializeField] Vector3 direccion2;
     //[SerializeField] Quaternion rotation;
     [SerializeField] int velocidad;
     float timer = 0;
@@ -22,10 +20,10 @@ public class Coleccionable : MonoBehaviour
     {
         timer += 1 * Time.deltaTime;
         transform.Rotate(direccion * velocidad * Time.deltaTime, Space.World);
-        transform.Translate(direccion2 * velocidad * Time.deltaTime, Space.World);
+        transform.Translate(direccion * velocidad * Time.deltaTime);
         if (timer >= 5f)
         {
-            direccion2 = direccion2 * -1;
+            direccion = direccion * -1;
             timer = 0;
         }
 
