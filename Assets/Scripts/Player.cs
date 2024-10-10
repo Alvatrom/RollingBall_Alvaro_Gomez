@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,6 +9,8 @@ public class Player : MonoBehaviour
     [SerializeField] float fuerza = 5, fuerzaSalto = 8f;
     Rigidbody rb;
     float h, v;
+    int puntuacion;
+    [SerializeField] TMP_Text textoPuntuacion;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +37,17 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         rb.AddForce(new Vector3(-v, 0, h).normalized * fuerza, ForceMode.Force);
+        
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Obstaculo"))
+        {
+            puntuacion += 10;
+            //textoPuntuacion.text = "Puntuacion: " + puntuacion;
+            //textoPuntuacion.SetText =("Puntuacion: " + puntuacion);
+            textoPuntuacion.SetText("Puntuacion: " + puntuacion);
+        }
         
     }
 }
