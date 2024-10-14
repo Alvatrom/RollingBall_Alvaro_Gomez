@@ -6,7 +6,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
-    [SerializeField] float fuerza = 5, fuerzaSalto = 8f;
+    [SerializeField] private float fuerza = 5, fuerzaSalto = 8f;
+    [SerializeField] private float DistanciaRaycast = 3.32f;
     Rigidbody rb;
     float h, v;
     int puntuacion;
@@ -26,7 +27,7 @@ public class Player : MonoBehaviour
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && DetectarSuelo())
         {
             rb.AddForce(direccion*fuerza,ForceMode.Impulse);
             //rb.AddForce(new Vector3(0, 1, 0).normalized * fuerzaSalto, ForceMode.Force);
@@ -49,5 +50,11 @@ public class Player : MonoBehaviour
             textoPuntuacion.SetText("Puntuacion: " + puntuacion);
         }
         
+    }
+    private bool DetectarSuelo()
+    {
+        bool resultado = Physics.Raycast(transform.position,new Vector3(0,-3.32f, 0)/*Vector3.down*/, DistanciaRaycast);
+        Debug.DrawRay(transform.position, Vector3.down, Color.red, 2f);
+        return resultado;
     }
 }
