@@ -20,7 +20,7 @@ public class ParedCubos : MonoBehaviour
             if (timer >= 2)
             {
                 Time.timeScale = 1;
-                for (int i = 0; i < 60; i++)
+                for (int i = 0; i < rbs.Length; i++)
                 {
                     rbs[i].useGravity = true;
                 }
