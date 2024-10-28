@@ -29,7 +29,8 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && DetectarSuelo())
         {
-            rb.AddForce(direccion*fuerza,ForceMode.Impulse);
+            //rb.AddForce(direccion*fuerza,ForceMode.Impulse);
+            rb.AddForce(Vector3.up*fuerzaSalto,ForceMode.Impulse);
             //rb.AddForce(new Vector3(0, 1, 0).normalized * fuerzaSalto, ForceMode.Force);
         }
 
