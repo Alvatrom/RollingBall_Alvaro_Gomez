@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8698860429232659082}
   m_Layer: 0
   m_Name: Potenciador
-  m_TagString: Untagged
+  m_TagString: Objetos
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c22629efab96c2d4381d34232e715a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sonidoCling: {fileID: 8300000, guid: 9cad34af4d5c230459ca0b26825d9bf3, type: 3}
+  miManager: {fileID: 0}
   direccion: {x: 4.1, y: 10, z: 0}
   direccion2: {x: 0, y: 0, z: 2.8}
   velocidad: 10
@@ -115,7 +117,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2

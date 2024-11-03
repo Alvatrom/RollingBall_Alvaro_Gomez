@@ -1,18 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuPrincipal : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private new AudioSource audio;
+
+
     void Start()
+    {
+        audio = GetComponent<AudioSource>();
+        Time.timeScale= 1.0f;
+        
+    }
+
+    void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartGame()
     {
-        
+        StartCoroutine(EsperarYCargarEscena());
+    }
+
+
+    private IEnumerator EsperarYCargarEscena()
+    {
+        yield return new WaitForSeconds(1f);// espera 1 segundo
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

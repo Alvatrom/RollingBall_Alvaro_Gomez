@@ -6,11 +6,14 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
+    [SerializeField] private int vida = 5;
     [SerializeField] private float fuerza = 5, fuerzaSalto = 8f;
     [SerializeField] private float DistanciaRaycast = 3.32f;
+    [SerializeField] private float timerParpadeoTotal = 0, timerParpadeoIntermitente = 0,tiempoParpadeoTotal = 1, tiempoParpadeoIntermitente = 0.15f;
+    MeshRenderer mr;
     Rigidbody rb;
     float h, v;
-    int puntuacion;
+    int objetos = 0, objetosTotales = 5;
     [SerializeField] TMP_Text textoPuntuacion;
 
     // Start is called before the first frame update
@@ -18,6 +21,7 @@ public class Player : MonoBehaviour
     {
         GetComponent<Rigidbody>();
         rb = GetComponent<Rigidbody>();
+        mr = GetComponent<MeshRenderer>();
         
     }
     
@@ -27,10 +31,13 @@ public class Player : MonoBehaviour
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
 
+        Parpadeo();
+
         if (Input.GetKeyDown(KeyCode.Space) && DetectarSuelo())
         {
             //rb.AddForce(direccion*fuerza,ForceMode.Impulse);
             rb.AddForce(Vector3.up*fuerzaSalto,ForceMode.Impulse);
+            AudioManager.Instance.PlaySFX("Jump");
             //rb.AddForce(new Vector3(0, 1, 0).normalized * fuerzaSalto, ForceMode.Force);
         }
 
@@ -38,20 +45,59 @@ public class Player : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        rb.AddForce(new Vector3(-v, 0, h).normalized * fuerza, ForceMode.Force);
+        if (DetectarSuelo())
+        {
+            rb.AddForce(new Vector3(-v, 0, h).normalized * fuerza, ForceMode.Force);
+        }
         
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Obstaculo"))
+        if (other.CompareTag("Objetos"))
         {
-            puntuacion += 10;
-            //textoPuntuacion.text = "Puntuacion: " + puntuacion;
-            //textoPuntuacion.SetText =("Puntuacion: " + puntuacion);
-            textoPuntuacion.SetText("Puntuacion: " + puntuacion);
-        }
-        
+            objetos += 1;
+            Destroy(other.gameObject);
+            AudioManager.Instance.PlaySFX("CapsulaEnergia");
+            textoPuntuacion.SetText("Capsulas de energia: " + objetos+ "/" + objetosTotales);
+        } 
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Obstaculo")
+        {
+            Parpadeo();
+            vida--;
+        }
+
+    }
+    void Parpadeo()
+    {
+        if (timerParpadeoTotal > 0)
+        {
+            timerParpadeoTotal -= Time.deltaTime;
+
+            timerParpadeoIntermitente -= Time.deltaTime;
+            if (timerParpadeoIntermitente < 0)
+            {
+                timerParpadeoIntermitente = tiempoParpadeoIntermitente;
+            }
+            //invertir booleano enabled
+            mr.enabled = !mr.enabled;
+            if (mr.enabled == true)
+            {
+                mr.enabled = false;
+            }
+            else
+            {
+                mr.enabled = true;
+            }
+        }
+        if (timerParpadeoTotal <= 0)
+        {
+            mr.enabled = true;
+        }
+    }
+
     private bool DetectarSuelo()
     {
         bool resultado = Physics.Raycast(transform.position,new Vector3(0,-3.32f, 0)/*Vector3.down*/, DistanciaRaycast);
