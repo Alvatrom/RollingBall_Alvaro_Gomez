@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Obstaculo
   - Objetos
+  - Cubos
+  - Cura
   layers:
   - Default
   - TransparentFX

@@ -14,10 +14,8 @@ public class Obstaculo : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
     }
-
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter(Collision collision)
     {
-
+        
     }
 }

@@ -6,10 +6,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
-    [SerializeField] private int vida = 5;
     [SerializeField] private float fuerza = 5, fuerzaSalto = 8f;
     [SerializeField] private float DistanciaRaycast = 3.32f;
     [SerializeField] private float timerParpadeoTotal = 0, timerParpadeoIntermitente = 0,tiempoParpadeoTotal = 1, tiempoParpadeoIntermitente = 0.15f;
+    public GameObject[] vidas;
     MeshRenderer mr;
     Rigidbody rb;
     float h, v;
@@ -43,6 +43,16 @@ public class Player : MonoBehaviour
 
         
     }
+    public void DesactivarVida(int indice)
+    {
+        vidas[indice].SetActive(false);
+    }
+
+    public void ActivarVida(int indice)
+    {
+        vidas[indice].SetActive(true);
+    }
+
     private void FixedUpdate()
     {
         if (DetectarSuelo())
@@ -59,14 +69,26 @@ public class Player : MonoBehaviour
             Destroy(other.gameObject);
             AudioManager.Instance.PlaySFX("CapsulaEnergia");
             textoPuntuacion.SetText("Capsulas de energia: " + objetos+ "/" + objetosTotales);
-        } 
+        }
+
+        if (other.CompareTag("Cura") )
+        {
+            Destroy(other.gameObject);
+            AudioManager.Instance.PlaySFX("Vida");
+            GameManager.instance.RecuperarVida();
+
+        }
     }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Obstaculo")
         {
             Parpadeo();
-            vida--;
+            GameManager.instance.PerderVida();
+        }
+        if (collision.gameObject.tag == "Cubos")
+        {
+            AudioManager.Instance.PlaySFX("GolpeCubo");
         }
 
     }

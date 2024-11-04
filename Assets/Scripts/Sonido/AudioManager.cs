@@ -29,16 +29,17 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        PlayMusic("PlayMode");
-    }
-
     public void ReproducirSonido(AudioClip clip)
     {
         //Reproducir una vez el sonido
         audioSourceSfx.PlayOneShot(clip);
     }
+
+    private void Start()
+    {
+        PlayMusic("PlayMode");
+    }
+
     public void PlayMusic(string name)//busca por nombre en el array creado los siguientes sonidos
     {
         Sound s =Array.Find(musicSounds, x => x.name == name);
@@ -65,4 +66,21 @@ public class AudioManager : MonoBehaviour
             audioSourceSfx.PlayOneShot(s.clip);
         }
     }
+    public void ToggleMusic()
+    {
+        musicSource.mute = !musicSource.mute;
+    }
+    public void ToggleSFX()
+    {
+        audioSourceSfx.mute = !audioSourceSfx.mute;
+    }
+    public void MusicVolume(float volume)
+    {
+        musicSource.volume = volume;
+    }
+    public void SFXVolume(float volume)
+    {
+        audioSourceSfx.volume = volume;
+    }
+
 }

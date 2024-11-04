@@ -32,7 +32,7 @@ public class ParedCubos : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Time.timeScale = 0.2f;
+            Time.timeScale = 0.8f;
             IniciarTimer = true;//Para iniciar cuenta para que el tiempo vuelva al 100%
 
         }
