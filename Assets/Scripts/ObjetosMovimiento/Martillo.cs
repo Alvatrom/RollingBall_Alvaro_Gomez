@@ -3,7 +3,8 @@ using System.Collections;
 
 public class RotateObject : MonoBehaviour
 {
-    [SerializeField] float rotacionAngulo = 77f, rotacionIda = 2f, rotacionVuelta = 2f, tiempoEspera = 2f;
+    [SerializeField] float rotacionAngulo = 77f, rotacionIda = 2f, rotacionVuelta = 2f, tiempoEspera = 2f, retardoInicio = 0f;
+    private bool primeraVez = true;
   
 
     private void Start()
@@ -11,8 +12,14 @@ public class RotateObject : MonoBehaviour
         StartCoroutine(RotateCycle());
     }
 
+
     private IEnumerator RotateCycle()//corrutina que permite ejecutar codigo en multiples frames
     {
+        if (primeraVez)
+        {
+            yield return new WaitForSeconds(retardoInicio);//para que espere el retardo solo al principio
+            primeraVez= false;
+        }
         while (true)//para qie se ejecute indefinidamente
         {
             // Rotar al angulo deseado en el tiempo estipulado

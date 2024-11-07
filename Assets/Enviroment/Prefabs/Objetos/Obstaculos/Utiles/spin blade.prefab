@@ -81,7 +81,12 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: dcccae8e4d8234e82bebbb88f979ca13,
         type: 3}
       propertyPath: m_Name
-      value: spin blade 1
+      value: spin blade
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: dcccae8e4d8234e82bebbb88f979ca13,
+        type: 3}
+      propertyPath: m_TagString
+      value: Obstaculo
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -134,7 +139,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6277236993589420487}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: ef0797dd93b749042b81d4ad20ce1f94, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

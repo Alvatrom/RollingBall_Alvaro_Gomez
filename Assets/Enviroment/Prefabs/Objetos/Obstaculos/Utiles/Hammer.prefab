@@ -49,6 +49,7 @@ MonoBehaviour:
   rotacionIda: 0.1
   rotacionVuelta: 3
   tiempoEspera: 1.36
+  retardoInicio: 0
 --- !u!1 &8136679777810631564
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,7 +64,7 @@ GameObject:
   - component: {fileID: 7971374255442351875}
   m_Layer: 0
   m_Name: Hammer
-  m_TagString: Untagged
+  m_TagString: Obstaculo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -142,7 +143,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8136679777810631564}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: ef0797dd93b749042b81d4ad20ce1f94, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

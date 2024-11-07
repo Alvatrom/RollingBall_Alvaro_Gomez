@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     public void PerderVida()
     {
         vidas -= 1;
+        AudioManager.Instance.PlaySFX("Daño");
         player.DesactivarVida(vidas);
     }
 

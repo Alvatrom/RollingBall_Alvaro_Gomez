@@ -6,23 +6,34 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
-    [SerializeField] private float fuerza = 5, fuerzaSalto = 8f;
+    [SerializeField] private float fuerza = 5, fuerzaDevil = 2, fuerzaSalto = 8f;
     [SerializeField] private float DistanciaRaycast = 3.32f;
+    [SerializeField] private Color colorEmissiveDanho = Color.red; // color al recibir daño
+    [SerializeField] TMP_Text textoPuntuacion;
     [SerializeField] private float timerParpadeoTotal = 0, timerParpadeoIntermitente = 0,tiempoParpadeoTotal = 1, tiempoParpadeoIntermitente = 0.15f;
+    private bool parpadeando = false;
     public GameObject[] vidas;
+    private int vidasRestantes;
+    public GameObject canvasMuerte;
+    private Color colorEmissiveOriginal;
+    private Material material;
     MeshRenderer mr;
     Rigidbody rb;
     float h, v;
     int objetos = 0, objetosTotales = 5;
-    [SerializeField] TMP_Text textoPuntuacion;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         GetComponent<Rigidbody>();
         rb = GetComponent<Rigidbody>();
         mr = GetComponent<MeshRenderer>();
-        
+        material = mr.material;
+        colorEmissiveOriginal = material.GetColor("_EmissionColor"); //guardar el color original emissive, tenemos que usar ese nombre si o si para poder acceder a la capa
+        material.EnableKeyword("_EMISSION");//palabra clave para activar la emission
+        canvasMuerte.SetActive(false);
+        vidasRestantes = vidas.Length;//para saber la longitud del array,numero de vidas totales
+
     }
     
     // Update is called once per frame
@@ -30,8 +41,6 @@ public class Player : MonoBehaviour
     {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
-
-        Parpadeo();
 
         if (Input.GetKeyDown(KeyCode.Space) && DetectarSuelo())
         {
@@ -45,12 +54,27 @@ public class Player : MonoBehaviour
     }
     public void DesactivarVida(int indice)
     {
-        vidas[indice].SetActive(false);
+        if (indice >= 0 && indice < vidas.Length)//verificar nº de vidas
+        {
+            vidas[indice].SetActive(false);
+            vidasRestantes--;
+
+            if (vidasRestantes <= 0)
+            {
+                //muerte
+                Destroy(gameObject);
+                canvasMuerte.SetActive(true);
+            }
+        }
     }
 
     public void ActivarVida(int indice)
     {
-        vidas[indice].SetActive(true);
+        if (indice >= 0 && indice < vidas.Length)
+        {
+            vidas[indice].SetActive(true);
+            vidasRestantes++;
+        }
     }
 
     private void FixedUpdate()
@@ -58,6 +82,10 @@ public class Player : MonoBehaviour
         if (DetectarSuelo())
         {
             rb.AddForce(new Vector3(-v, 0, h).normalized * fuerza, ForceMode.Force);
+        }
+        else
+        {
+            rb.AddForce(new Vector3(-v, 0, h).normalized * fuerzaDevil, ForceMode.Force);
         }
         
     }
@@ -81,9 +109,10 @@ public class Player : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Obstaculo")
+        if (collision.gameObject.tag == "Obstaculo" && !parpadeando)
         {
-            Parpadeo();
+            StartCoroutine(Parpadeo());
+            material.SetColor("_EmissionColor", colorEmissiveDanho); //cambiar al color emissive de daño
             GameManager.instance.PerderVida();
         }
         if (collision.gameObject.tag == "Cubos")
@@ -92,33 +121,32 @@ public class Player : MonoBehaviour
         }
 
     }
-    void Parpadeo()
+    IEnumerator Parpadeo()
     {
-        if (timerParpadeoTotal > 0)
+        parpadeando = true;
+        float timerParpadeoTotal = tiempoParpadeoTotal;
+        float timerParpadeoIntermitente = tiempoParpadeoIntermitente;
+
+        while (timerParpadeoTotal > 0)
         {
             timerParpadeoTotal -= Time.deltaTime;
-
             timerParpadeoIntermitente -= Time.deltaTime;
-            if (timerParpadeoIntermitente < 0)
+
+            if (timerParpadeoIntermitente <= 0)
             {
                 timerParpadeoIntermitente = tiempoParpadeoIntermitente;
+                mr.enabled = !mr.enabled; //alternar visibilidad para simular el parpadeo
             }
-            //invertir booleano enabled
-            mr.enabled = !mr.enabled;
-            if (mr.enabled == true)
-            {
-                mr.enabled = false;
-            }
-            else
-            {
-                mr.enabled = true;
-            }
+
+            yield return null;
         }
-        if (timerParpadeoTotal <= 0)
-        {
-            mr.enabled = true;
-        }
+
+        //restaurar el estado original
+        material.SetColor("_EmissionColor", colorEmissiveOriginal);
+        mr.enabled = true;
+        parpadeando = false;
     }
+
 
     private bool DetectarSuelo()
     {
