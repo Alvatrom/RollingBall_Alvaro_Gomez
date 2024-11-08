@@ -6,17 +6,18 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject MenuPausa;
+    [SerializeField] GameObject menuPausa, canvasMuerte;
+
 
     private int vidas = 3;
 
-    public int Vidas1 { get => vidas;}
+    public int Vidas1 { get => vidas; }
 
     public Player player;// lo hacemos publico para poder usarlo luego
 
     //SINGLETON
     public static GameManager instance;
-    
+
 
 
     void Start()
@@ -36,7 +37,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
 
-        MenuPausa.SetActive(false);
+        menuPausa.SetActive(false);
+        canvasMuerte.SetActive(false);
     }
 
     // Update is called once per frame
@@ -46,23 +48,27 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game" || Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Training")
         {
-            if (MenuPausa.activeSelf)
+            if (menuPausa.activeSelf)
             {
-                MenuPausa.SetActive(false);
+                menuPausa.SetActive(false);
             }
             else
             {
                 Time.timeScale = 0;
-                MenuPausa.SetActive(true);
+                menuPausa.SetActive(true);
             }
-            MenuPausa.SetActive(true);
+            menuPausa.SetActive(true);
+        }
+        if (player.VidasRestantes <= 0 && canvasMuerte != null)
+        {
+            canvasMuerte.SetActive(true);
         }
     }
 
     public void PerderVida()
     {
         vidas -= 1;
-        AudioManager.Instance.PlaySFX("Daño");
+        AudioManager.instance.PlaySFX("Daño");
         player.DesactivarVida(vidas);
     }
 
@@ -75,17 +81,26 @@ public class GameManager : MonoBehaviour
     public void Reanudar()
     {
         Time.timeScale = 1;
-        MenuPausa.SetActive(false);
+        menuPausa.SetActive(false);
 
     }
 
     public void ReiniciarPartida()
     {
-        //Scene escena = SceneManager.GetActiveScene();
-        //SceneManager.LoadScene(escena.name);
+        // Llamar al método ResetPlayer() del Singleton Player
+        if (Player.instance != null)
+        {
+            Player.instance.ResetPlayer();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró la instancia de Player al reiniciar la partida.");
+        }
+
+        menuPausa.SetActive(false);
+        canvasMuerte.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        MenuPausa.SetActive(false);
     }
 
     public void Salir()
@@ -97,6 +112,6 @@ public class GameManager : MonoBehaviour
     public void MenuPrincipal()
     {
         SceneManager.LoadScene("Titulo");
-        MenuPausa.SetActive(false);
+        menuPausa.SetActive(false);
     }
 }

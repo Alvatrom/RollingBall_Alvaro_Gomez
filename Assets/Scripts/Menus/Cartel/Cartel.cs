@@ -18,18 +18,22 @@ public class Cartel : MonoBehaviour
 
     private void Update()
     {
-        //calcular la distancia
-        float distancia = Vector3.Distance(transform.position, player.position);
-        teclaE.enabled = distancia < distanciaLectura;
+        if (player != null)
+        {
+            //calcular la distancia
+            float distancia = Vector3.Distance(transform.position, player.position);
+            teclaE.enabled = distancia < distanciaLectura;
 
-        if (teclaE.enabled && Input.GetKeyDown(KeyCode.E))
-        {
-            DialogueManager.instance.MostrarTexto(contenido);
+            if (teclaE.enabled && Input.GetKeyDown(KeyCode.E))
+            {
+                DialogueManager.instance.MostrarTexto(contenido);
+            }
+            else if (!teclaE.enabled)
+            {
+                DialogueManager.instance.OcultarTexto();
+            }
         }
-        else if (!teclaE.enabled)
-        {
-            DialogueManager.instance.OcultarTexto();
-        }
+        
     }
 
     private void OnDrawGizmos()

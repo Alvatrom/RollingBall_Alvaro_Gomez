@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;
+    public static AudioManager instance;
 
     [Header("Music Sounds")]
     [SerializeField] private Sound[] musicSounds;
@@ -18,15 +18,16 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance == null)
+        if(instance == null)
         {
-            Instance = this;
+            instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
+        
     }
 
     public void ReproducirSonido(AudioClip clip)
