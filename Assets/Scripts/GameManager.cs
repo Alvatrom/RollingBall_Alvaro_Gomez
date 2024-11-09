@@ -36,17 +36,44 @@ public class GameManager : MonoBehaviour
         // NO DESTRUIR ENTRE ESCENAS
         DontDestroyOnLoad(gameObject);
 
+        BuscarPlayer();
 
-        menuPausa.SetActive(false);
-        canvasMuerte.SetActive(false);
+        if (menuPausa == null)
+        {
+            menuPausa = GameObject.Find("CanvasPausa");
+        }
+
+        // Verificar y desactivar los elementos si se encontraron
+        if (menuPausa != null)
+        {
+            menuPausa.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("menuPausa no se encontró en la escena.");
+        }
+
+        if (canvasMuerte == null)
+        {
+            canvasMuerte = GameObject.Find("CanvasMuerte");
+        }
+
+        if (canvasMuerte != null)
+        {
+            canvasMuerte.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("canvasMuerte no se encontró en la escena.");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
 
-
-        if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game" || Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Training")
+        BuscarPlayer();
+        if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game")
         {
             if (menuPausa.activeSelf)
             {
@@ -59,7 +86,11 @@ public class GameManager : MonoBehaviour
             }
             menuPausa.SetActive(true);
         }
-        if (player.VidasRestantes <= 0 && canvasMuerte != null)
+        if (player == null)
+        {
+            Debug.LogWarning("El objeto Player no se encontró en la escena.");
+        }
+        else if (player.PlayerVivo == false && canvasMuerte != null)
         {
             canvasMuerte.SetActive(true);
         }
@@ -87,26 +118,12 @@ public class GameManager : MonoBehaviour
 
     public void ReiniciarPartida()
     {
-        // Llamar al método ResetPlayer() del Singleton Player
-        if (Player.instance != null)
-        {
-            Player.instance.ResetPlayer();
-        }
-        else
-        {
-            Debug.LogWarning("No se encontró la instancia de Player al reiniciar la partida.");
-        }
-
         menuPausa.SetActive(false);
         canvasMuerte.SetActive(false);
         Time.timeScale = 1;
+        vidas = 3;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void Salir()
-    {
-        print("cerrando juego...");
-        Application.Quit();
+        BuscarPlayer();
     }
 
     public void MenuPrincipal()
@@ -114,4 +131,29 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Titulo");
         menuPausa.SetActive(false);
     }
+    public void Salir()
+    {
+        print("cerrando juego...");
+        Application.Quit();
+    }
+    public void BuscarPlayer()
+    {
+        //para encontrar si o si al player
+        if (player == null)
+        {
+            player = FindObjectOfType<Player>();
+
+            if (player == null)
+            {
+                Debug.LogWarning("No se encontró ningún objeto de tipo 'Player' en la escena.");
+                canvasMuerte.SetActive(true);
+            }
+        }
+        if(player != null)
+        {
+            canvasMuerte.SetActive(false);
+        }
+    }
+
+
 }

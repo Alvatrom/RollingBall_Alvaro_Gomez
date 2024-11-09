@@ -8,6 +8,8 @@ TagManager:
   - Objetos
   - Cubos
   - Cura
+  - Muerte
+  - portal
   layers:
   - Default
   - TransparentFX

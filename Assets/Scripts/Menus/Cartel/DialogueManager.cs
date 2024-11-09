@@ -95,4 +95,18 @@ public class DialogueManager : MonoBehaviour
         canvasDialogue.SetActive(false);
         mostrando = false;
     }
+
+    public void ResetDialogueManager()
+    {
+        mostrando = false;
+        textos = null;
+        indiceTextos = 0;
+        fraseActual = "";
+        indiceFrase = 0;
+        if (canvasDialogue != null)
+        {
+            canvasDialogue.SetActive(false);
+        }
+    }
+
 }

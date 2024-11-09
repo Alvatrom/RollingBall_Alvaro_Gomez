@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public static Player instance;
-
     [SerializeField] Vector3 direccion;
     [SerializeField] private float fuerza = 5, fuerzaDevil = 2, fuerzaSalto = 8f;
     [SerializeField] private float DistanciaRaycast = 3.32f;
@@ -15,8 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float timerParpadeoTotal = 0, timerParpadeoIntermitente = 0, tiempoParpadeoTotal = 1, tiempoParpadeoIntermitente = 0.15f;
     private bool parpadeando = false;
     public GameObject[] vidas;
-    public int indiceVidas = 2;//para sistema de reset de vidas y para desactivar vidas
-    public int indiceActivarVidas = 0;// para sistema de activar vidas
+    public int indiceVidas = 0;
     private int vidasRestantes;
     private Color colorEmissiveOriginal;
     private Material material;
@@ -25,20 +22,25 @@ public class Player : MonoBehaviour
     float h, v;
     int objetos = 0, objetosTotales = 5;
 
-    public int VidasRestantes { get => vidasRestantes; set => vidasRestantes = value; }
+    bool playerVivo = true;
 
-    void Awake()
+    //public static Player instance;
+
+    public int VidasRestantes { get => vidasRestantes; set => vidasRestantes = value; }
+    public bool PlayerVivo { get => playerVivo; set => playerVivo = value; }
+
+    private void Awake()
     {
-        // Inicialización del Singleton
-        if (instance == null)
+        /*if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // No destruir entre escenas
+            DontDestroyOnLoad(gameObject);
         }
-        else if (instance != this)
+        else
         {
-            Destroy(gameObject); // Destruir duplicados
-        }
+            Destroy(gameObject);
+        }*/
+
     }
 
     void Start()
@@ -56,9 +58,24 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (playerVivo)
+        {
+            Movimiento();
+            Salto();
+
+            
+        }
+        
+    }
+
+    public void Movimiento()
+    {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
+    }
 
+    public void Salto()
+    {
         if (Input.GetKeyDown(KeyCode.Space) && DetectarSuelo())
         {
             //rb.AddForce(direccion*fuerza,ForceMode.Impulse);
@@ -66,39 +83,8 @@ public class Player : MonoBehaviour
             AudioManager.instance.PlaySFX("Jump");
             //rb.AddForce(new Vector3(0, 1, 0).normalized * fuerzaSalto, ForceMode.Force);
         }
-
-
-    }
-    ////////////////////////////////////////////////////////
-    /*public void DesactivarVida()
-    {
-        if (indiceVidas >= 0 && indiceVidas < vidas.Length)//verificar nº de vidas
-        {
-            vidas[indiceVidas].SetActive(false);
-            vidasRestantes--;
-
-            // Reducir el índice de la vida a desactivar para la próxima vez
-            this.indiceVidas--;
-
-            if (vidasRestantes <= 0)
-            {
-                //muerte
-                Destroy(gameObject);
-            }
-        }
     }
 
-    public void ActivarVida()
-    {
-        if (indiceActivarVidas >= 0 && indiceActivarVidas < vidas.Length)
-        {
-            vidas[indiceActivarVidas].SetActive(true);
-            vidasRestantes++;
-
-            this.indiceActivarVidas++;
-        }
-    }*/
-    ////////////////////////////////////////////////
     public void DesactivarVida(int indiceVidas)
     {
         if (indiceVidas >= 0 && indiceVidas < vidas.Length)//verificar nº de vidas
@@ -109,6 +95,8 @@ public class Player : MonoBehaviour
             if (vidasRestantes <= 0)
             {
                 //muerte
+                playerVivo= false;
+                AudioManager.instance.PlaySFX("Die");
                 Destroy(gameObject);
             }
         }
@@ -122,25 +110,29 @@ public class Player : MonoBehaviour
             vidasRestantes++;
         }
     }
-
-    public void ResetPlayer()
+    public void ReiniciarPlayer()
     {
-        indiceVidas = vidas.Length - 1;// Reiniciar al último índice del array de vidas(sacas el valor real del indice)
-        indiceActivarVidas = 0; //Comenzar activación desde el primer índice
+        // Resetear variables al estado inicial
+        vidasRestantes = vidas.Length; // todas las vidas activas
+        indiceVidas = 0;
+        objetos = 0;
 
-        vidasRestantes = vidas.Length; // Reiniciar vidasRestantes al número total de vidas
-        objetos = 0; // Reiniciar el número de objetos recogidos
-
-        // Activar todas las vidas en el array
+        // Restablecer las vidas visualmente
         foreach (GameObject vida in vidas)
         {
             if (vida != null)
             {
-                vida.SetActive(true); // Asegurar que todas las vidas estén activas
+                vida.SetActive(true);
             }
         }
 
-        // Actualizar el texto de puntuación
+        // Restablecer el material a su color original
+        if (material != null)
+        {
+            material.SetColor("_EmissionColor", colorEmissiveOriginal);
+        }
+
+        parpadeando = false;
         textoPuntuacion.SetText("Capsulas de energia: " + objetos + "/" + objetosTotales);
     }
 
@@ -174,7 +166,7 @@ public class Player : MonoBehaviour
 
         }
     }
-    private void OnCollisionEnter(Collision collision)
+    private IEnumerator OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Obstaculo" && !parpadeando)
         {
@@ -186,8 +178,16 @@ public class Player : MonoBehaviour
         {
             AudioManager.instance.PlaySFX("GolpeCubo");
         }
+        if (collision.gameObject.tag == "Muerte")
+        {
+            AudioManager.instance.PlaySFX("Die");
+            yield return new WaitForSeconds(0.8f);
+            playerVivo = false;
+            Destroy(gameObject);
+        }
 
     }
+
     IEnumerator Parpadeo()
     {
         parpadeando = true;

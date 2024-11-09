@@ -13,7 +13,20 @@ public class Cartel : MonoBehaviour
 
     private void Start()
     {
-        teclaE.enabled = false;
+        if (teclaE == null)
+        {
+            teclaE = GameObject.Find("CanvasEstatua")?.GetComponent<Canvas>();
+        }
+        //Canvas teclaE = GameObject.Find("CanvasEstatua")?.GetComponent<Canvas>();// la interrogacion es para , en el caso que no encuentre el canvas y devuelva un null, no bisque el componente y devuelva un null references
+        if (teclaE != null)
+        {
+            teclaE.enabled = false;
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró un Canvas llamado 'CanvasEstatua'.");
+        }
+        //teclaE.enabled = false;
     }
 
     private void Update()
