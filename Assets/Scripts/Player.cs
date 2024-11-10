@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -10,9 +11,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float DistanciaRaycast = 3.32f;
     [SerializeField] private Color colorEmissiveDanho = Color.red; // color al recibir daño
     [SerializeField] TMP_Text textoPuntuacion;
+    [SerializeField] GameObject textoPortal;
     [SerializeField] private float timerParpadeoTotal = 0, timerParpadeoIntermitente = 0, tiempoParpadeoTotal = 1, tiempoParpadeoIntermitente = 0.15f;
+    [SerializeField] GameObject vidasLlenas;
     private bool parpadeando = false;
     public GameObject[] vidas;
+    public GameObject portal;
+    
     public int indiceVidas = 0;
     private int vidasRestantes;
     private Color colorEmissiveOriginal;
@@ -29,19 +34,6 @@ public class Player : MonoBehaviour
     public int VidasRestantes { get => vidasRestantes; set => vidasRestantes = value; }
     public bool PlayerVivo { get => playerVivo; set => playerVivo = value; }
 
-    private void Awake()
-    {
-        /*if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }*/
-
-    }
 
     void Start()
     {
@@ -52,6 +44,8 @@ public class Player : MonoBehaviour
         colorEmissiveOriginal = material.GetColor("_EmissionColor"); //guardar el color original emissive, tenemos que usar ese nombre si o si para poder acceder a la capa
         material.EnableKeyword("_EMISSION");//palabra clave para activar la emission
         vidasRestantes = vidas.Length;//para saber la longitud del array,numero de vidas totales
+        vidasLlenas.SetActive(false);
+        textoPortal.SetActive(false);
 
     }
 
@@ -62,10 +56,7 @@ public class Player : MonoBehaviour
         {
             Movimiento();
             Salto();
-
-            
         }
-        
     }
 
     public void Movimiento()
@@ -148,7 +139,7 @@ public class Player : MonoBehaviour
         }
 
     }
-    private void OnTriggerEnter(Collider other)
+    private IEnumerator OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Objetos"))
         {
@@ -156,15 +147,25 @@ public class Player : MonoBehaviour
             Destroy(other.gameObject);
             AudioManager.instance.PlaySFX("CapsulaEnergia");
             textoPuntuacion.SetText("Capsulas de energia: " + objetos + "/" + objetosTotales);
+            if(objetos == 5)
+            {
+                ActivarPortal();
+            }
         }
-
-        if (other.CompareTag("Cura"))
+        if (other.CompareTag("Cura") && vidasRestantes < 3)
         {
             Destroy(other.gameObject);
             AudioManager.instance.PlaySFX("Vida");
             GameManager.instance.RecuperarVida();
 
         }
+        else if(other.CompareTag("Cura") && vidasRestantes == 3)
+        {
+            vidasLlenas.SetActive(true);
+            yield return new WaitForSeconds(1f);
+            vidasLlenas.SetActive(false);
+        }
+
     }
     private IEnumerator OnCollisionEnter(Collision collision)
     {
@@ -184,6 +185,10 @@ public class Player : MonoBehaviour
             yield return new WaitForSeconds(0.8f);
             playerVivo = false;
             Destroy(gameObject);
+        }
+        if (collision.gameObject.tag == "portal" && portal.activeSelf)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
 
     }
@@ -213,12 +218,15 @@ public class Player : MonoBehaviour
         mr.enabled = true;
         parpadeando = false;
     }
-
-
     private bool DetectarSuelo()
     {
         bool resultado = Physics.Raycast(transform.position, new Vector3(0, -3.32f, 0)/*Vector3.down*/, DistanciaRaycast);
         Debug.DrawRay(transform.position, Vector3.down, Color.red, 2f);
         return resultado;
+    }
+    public void ActivarPortal()
+    {
+        portal.SetActive(true);
+        textoPortal.SetActive(true);
     }
 }

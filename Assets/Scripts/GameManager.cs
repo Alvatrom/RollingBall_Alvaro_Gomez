@@ -71,8 +71,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        BuscarPlayer();
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+          BuscarPlayer();
+        }
         if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game")
         {
             if (menuPausa.activeSelf)
@@ -90,7 +92,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("El objeto Player no se encontró en la escena.");
         }
-        else if (player.PlayerVivo == false && canvasMuerte != null)
+        else if (player == null && canvasMuerte != null && SceneManager.GetActiveScene().name != "Game")
         {
             canvasMuerte.SetActive(true);
         }
@@ -145,8 +147,8 @@ public class GameManager : MonoBehaviour
 
             if (player == null)
             {
-                Debug.LogWarning("No se encontró ningún objeto de tipo 'Player' en la escena.");
                 canvasMuerte.SetActive(true);
+                Debug.LogWarning("No se encontró ningún objeto de tipo 'Player' en la escena.");
             }
         }
         if(player != null)

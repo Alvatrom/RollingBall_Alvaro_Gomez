@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class AudioManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += FiltroEscena; //cuando cargue una escena, dependiendo de que escena sea reproduce una cancion o otra 
         }
         else
         {
@@ -38,7 +40,24 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayMusic("PlayMode");
+        //PlayMusic("PlayMode");
+    }
+    
+    private void FiltroEscena(Scene scene, LoadSceneMode mode)
+    {
+        //Reproducir la música correspondiente a la escena cargada
+        if (scene.name == "Titulo")
+        {
+            PlayMusic("MenuPrincipal");
+        }
+        else if (scene.name == "Game")
+        {
+            PlayMusic("PlayMode");
+        }
+        else if (scene.name == "Final")
+        {
+            PlayMusic("MenuFinal");
+        }
     }
 
     public void PlayMusic(string name)//busca por nombre en el array creado los siguientes sonidos
