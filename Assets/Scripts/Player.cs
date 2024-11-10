@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     [SerializeField] Vector3 direccion;
-    [SerializeField] private float fuerza = 5, fuerzaDevil = 2, fuerzaSalto = 8f;
+    [SerializeField] private float fuerza = 7, fuerzaDevil = 6, fuerzaSalto = 9f;
     [SerializeField] private float DistanciaRaycast = 3.32f;
     [SerializeField] private Color colorEmissiveDanho = Color.red; // color al recibir daño
     [SerializeField] TMP_Text textoPuntuacion;

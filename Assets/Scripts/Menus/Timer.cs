@@ -33,8 +33,8 @@ public class Timer : MonoBehaviour
     }
     private void Update()
     {
-        BuscarPlayer();
         DetectarEscena();
+        BuscarPlayer();
         if(player!= null)
         {
             timer += Time.deltaTime;
@@ -56,6 +56,7 @@ public class Timer : MonoBehaviour
     {
         timer = 0f;
         ActualizarContador();
+        BuscarPlayer();
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -74,6 +75,7 @@ public class Timer : MonoBehaviour
         else
         {
             gameObject.SetActive(true);
+            BuscarPlayer();
         }
     }
     public void BuscarPlayer()
@@ -85,7 +87,11 @@ public class Timer : MonoBehaviour
 
             if (player == null)
             {
-                Debug.LogWarning("No se encontró ningún objeto de tipo 'Player' en la escena.");
+                Debug.LogWarning("No se encontró ningún objeto de tipo 'Player' en la escena para el timer.");
+            }
+            else if( player != null)
+            {
+                gameObject.SetActive(true);
             }
         }
        
